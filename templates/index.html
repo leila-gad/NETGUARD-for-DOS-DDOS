@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NetGuard — DoS Detection System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">NG</div>
+    <div>
+      <div class="logo-text">NETGUARD</div>
+      <div class="logo-sub">DoS / DDoS Detection System</div>
+    </div>
+  </div>
+  <div class="header-status">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">CONNECTING...</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card total">
+      <div class="stat-label">TOTAL ANALYZED</div>
+      <div class="stat-value" id="statTotal">0</div>
+    </div>
+    <div class="stat-card attacks">
+      <div class="stat-label">ATTACKS DETECTED</div>
+      <div class="stat-value" id="statAttacks">0</div>
+    </div>
+    <div class="stat-card benign">
+      <div class="stat-label">BENIGN FLOWS</div>
+      <div class="stat-value" id="statBenign">0</div>
+    </div>
+    <div class="stat-card rate">
+      <div class="stat-label">ATTACK RATE</div>
+      <div class="stat-value" id="statRate">0%</div>
+    </div>
+  </div>
+
+  <!-- MODEL INFO -->
+  <div class="model-strip">
+    <div><span>MODEL</span><strong>XGBoost DoS Detector</strong></div>
+    <div><span>ACCURACY</span><strong>99.98%</strong></div>
+    <div><span>F1-SCORE</span><strong>99.96%</strong></div>
+    <div><span>ROC-AUC</span><strong>100.00%</strong></div>
+    <div><span>FEATURES</span><strong id="featureCount">—</strong></div>
+    <div><span>API</span><strong id="apiStatus">—</strong></div>
+  </div>
+
+  <!-- INPUT -->
+  <div class="panel input-panel">
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+    <div class="panel-title">Network Flow Input</div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="fillDoS()">⚡ SIMULATE DoS</button>
+      <button class="btn-secondary" onclick="fillBenign()">✓ SIMULATE BENIGN</button>
+    </div>
+    <div class="input-grid">
+      <div class="field"><label>Destination Port</label><input type="number" id="f_dst_port" value="80"/></div>
+      <div class="field"><label>Flow Duration (μs)</label><input type="number" id="f_flow_dur" value="1000000"/></div>
+      <div class="field"><label>Total Fwd Packets</label><input type="number" id="f_fwd_pkts" value="10"/></div>
+      <div class="field"><label>Total Bwd Packets</label><input type="number" id="f_bwd_pkts" value="5"/></div>
+      <div class="field"><label>Flow Bytes/s</label><input type="number" id="f_flow_bps" value="5000"/></div>
+      <div class="field"><label>Flow Packets/s</label><input type="number" id="f_flow_pps" value="10"/></div>
+      <div class="field"><label>SYN Flag Count</label><input type="number" id="f_syn" value="1"/></div>
+      <div class="field"><label>RST Flag Count</label><input type="number" id="f_rst" value="0"/></div>
+      <div class="field"><label>PSH Flag Count</label><input type="number" id="f_psh" value="0"/></div>
+      <div class="field"><label>ACK Flag Count</label><input type="number" id="f_ack" value="1"/></div>
+      <div class="field"><label>Avg Packet Size</label><input type="number" id="f_avg_pkt" value="500"/></div>
+      <div class="field"><label>Init Win Bytes Fwd</label><input type="number" id="f_init_win" value="65535"/></div>
+    </div>
+    <button class="btn-analyze" id="btnAnalyze" onclick="analyze()">▶ ANALYZE FLOW</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="panel result-panel">
+    <div class="panel-title">Detection Result</div>
+    <div class="result-display" id="resultDisplay">
+      <div class="result-idle">
+        <div class="idle-icon">⬡</div>
+        <p>AWAITING FLOW DATA</p>
+      </div>
+    </div>
+    <div class="conf-bar-wrap">
+      <div class="conf-bar-label">
+        <span>ATTACK PROBABILITY</span>
+        <span id="confLabel">—</span>
+      </div>
+      <div class="conf-bar-track">
+        <div class="conf-bar-fill" id="confBar" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="panel chart-panel">
+    <div class="panel-title">Traffic Analysis — Last 20 Flows</div>
+    <div class="chart-wrap">
+      <canvas id="trafficChart"></canvas>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div class="panel log-panel">
+    <div class="panel-title">Alert Log</div>
+    <div id="logBody">
+      <div class="log-empty">NO FLOWS ANALYZED YET</div>
+    </div>
+  </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

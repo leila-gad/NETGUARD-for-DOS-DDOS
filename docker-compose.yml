@@ -1,0 +1,75 @@
+# orchestrates the container
+
+services:
+
+  #  DOS DETECTOR API 
+  dos-detector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dos-detector-api
+    image: dos-detector:latest
+
+    # Map host port 5000 to container port 5000
+    # Access the app at http://localhost:5000
+    ports:
+      - "5000:5000"
+
+    # VOLUMES 
+    # Mount logs/ as a named volume so prediction logs persist
+    # even if the container is stopped or rebuilt
+    volumes:
+      - logs_data:/app/logs
+
+    # ENVIRONMENT VARIABLES 
+    environment:
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+
+    # RESTART POLICY 
+    # Automatically restart if the container crashes
+    restart: unless-stopped
+
+    # RESOURCE LIMITS 
+    # Prevents the container from consuming all system memory
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+    #  HEALTHCHECK 
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  #  FUTURE SERVICES (commented out — ready to enable) 
+
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  #   depends_on:
+  #     - dos-detector
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - prometheus
+
+#  NAMED VOLUMES 
+# logs_data persists prediction logs between container restarts
+volumes:
+  logs_data:
+    driver: local
