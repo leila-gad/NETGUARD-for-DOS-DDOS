@@ -7,19 +7,28 @@ from datetime import datetime
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 
-app = Flask(__name__)
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+app = Flask(
+    __name__,
+    template_folder=BASE_DIR / "frontend" / "templates",
+    static_folder=BASE_DIR / "frontend" / "static"
+)
+
 CORS(app)
 
-# ── LOAD MODEL & ARTIFACTS ───────────────────────────────────
+# LOAD MODEL & ARTIFACTS 
 print("Loading model artifacts...")
-model         = joblib.load("models/dos_detector.pkl")
-scaler        = joblib.load("models/scaler.pkl")
-feature_names = joblib.load("models/feature_names.pkl")
+model = joblib.load(BASE_DIR / "models" / "dos_detector.pkl")
+scaler = joblib.load(BASE_DIR / "models" / "scaler.pkl")
+feature_names = joblib.load(BASE_DIR / "models" / "feature_names.pkl")
 print(f"  Model loaded. Expects {len(feature_names)} features.")
 
-# ── LOGGING SETUP ────────────────────────────────────────────
+#  LOGGING SETUP 
 # One JSON file per day: logs/predictions_YYYY-MM-DD.json
-os.makedirs("logs", exist_ok=True)
+os.makedirs(BASE_DIR / "logs", exist_ok=True)
 LOG_FILE = f"logs/predictions_{datetime.now().strftime('%Y-%m-%d')}.json"
 
 def save_log(entry: dict) -> None:

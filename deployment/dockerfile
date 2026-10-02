@@ -1,0 +1,66 @@
+# ============================================================
+# NETGUARD - DoS/DDoS Detection API
+# ============================================================
+
+FROM python:3.11-slim
+
+LABEL maintainer="Gadal Leila <leilagadal653@gmail.com>"
+LABEL description="DoS/DDoS Network Threat Detection API"
+LABEL version="1.0"
+
+# Python configuration
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV FLASK_ENV=production
+
+# Application directory
+WORKDIR /app
+
+# ------------------------------------------------------------
+# Install Python dependencies
+# ------------------------------------------------------------
+
+COPY deployment/requirements.txt .
+
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# ------------------------------------------------------------
+# Copy application files
+# ------------------------------------------------------------
+
+# Flask backend
+COPY backend/app.py ./backend/app.py
+
+# Frontend
+COPY frontend/templates/ ./frontend/templates/
+COPY frontend/static/ ./frontend/static/
+
+# Trained ML model and preprocessing artifacts
+COPY models/ ./models/
+
+# Results
+COPY results/ ./results/
+
+# Create logs directory
+RUN mkdir -p /app/logs
+
+# ------------------------------------------------------------
+# Network
+# ------------------------------------------------------------
+
+EXPOSE 5000
+
+# ------------------------------------------------------------
+# Container health check
+# ------------------------------------------------------------
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')" \
+    || exit 1
+
+# ------------------------------------------------------------
+# Start Flask API with Gunicorn
+# ------------------------------------------------------------
+
+CMD ["gunicorn", "--workers=2", "--bind=0.0.0.0:5000", "--timeout=120", "--access-logfile=-", "--chdir", "backend", "app:app"]

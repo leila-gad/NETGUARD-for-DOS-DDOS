@@ -1,7 +1,7 @@
 # ── PROJECT SPECIFIC ─────────────────────────────────────────
 
-# Dataset — too large for GitHub (3GB+)
-data/
+# CICIDS2017 datasets are tracked with Git LFS
+# data/
 
 # Trained model artifacts — too large for GitHub
 models/
@@ -9,12 +9,12 @@ models/
 # Prediction logs — generated at runtime
 logs/
 
-# Results — ignore large files, keep metrics.txt
-results/*.png
 
-# OS
+# ── OS ───────────────────────────────────────────────────────
+
 .DS_Store
 Thumbs.db
+
 
 # ── STANDARD PYTHON ──────────────────────────────────────────
 
@@ -69,10 +69,6 @@ coverage.xml
 .pytest_cache/
 cover/
 
-# Translations
-*.mo
-*.pot
-
 # Django stuff:
 *.log
 local_settings.py
@@ -83,7 +79,7 @@ db.sqlite3-journal
 instance/
 .webassets-cache
 
-# Scrapy stuff:
+# Scrapy
 .scrapy
 
 # Sphinx documentation
@@ -98,12 +94,11 @@ target/
 
 # IPython
 profile_default/
-ipython_config.py
 
 # Environments
 .env
 .envrc
-.venv
+.venv/
 env/
 venv/
 ENV/
@@ -114,18 +109,18 @@ venv.bak/
 # .python-version
 
 # pipenv
-#Pipfile.lock
+# Pipfile.lock
 
 # UV
-#uv.lock
+# uv.lock
 
 # poetry
-#poetry.lock
-#poetry.toml
+# poetry.lock
+# poetry.toml
 
 # pdm
-#pdm.lock
-#pdm.toml
+# pdm.lock
+# pdm.toml
 .pdm-python
 .pdm-build/
 
@@ -135,21 +130,21 @@ venv.bak/
 # PEP 582
 __pypackages__/
 
-# Celery stuff
+# Celery
 celerybeat-schedule
 celerybeat.pid
 
-# SageMath parsed files
+# SageMath
 *.sage.py
 
-# Spyder project settings
+# Spyder
 .spyderproject
 .spyproject
 
-# Rope project settings
+# Rope
 .ropeproject
 
-# mkdocs documentation
+# mkdocs
 /site
 
 # mypy
@@ -157,19 +152,19 @@ celerybeat.pid
 .dmypy.json
 dmypy.json
 
-# Pyre type checker
+# Pyre
 .pyre/
 
-# pytype static type analyzer
+# pytype
 .pytype/
 
-# Cython debug symbols
+# Cython
 cython_debug/
 
 # Ruff
 .ruff_cache/
 
-# PyPI configuration file
+# PyPI
 .pypirc
 
 # Cursor

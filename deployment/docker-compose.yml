@@ -1,37 +1,25 @@
-# orchestrates the container
-
 services:
 
-  #  DOS DETECTOR API 
   dos-detector:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: deployment/Dockerfile
+
     container_name: dos-detector-api
     image: dos-detector:latest
 
-    # Map host port 5000 to container port 5000
-    # Access the app at http://localhost:5000
     ports:
       - "5000:5000"
 
-    # VOLUMES 
-    # Mount logs/ as a named volume so prediction logs persist
-    # even if the container is stopped or rebuilt
     volumes:
       - logs_data:/app/logs
 
-    # ENVIRONMENT VARIABLES 
     environment:
       - FLASK_ENV=production
       - PYTHONUNBUFFERED=1
 
-    # RESTART POLICY 
-    # Automatically restart if the container crashes
     restart: unless-stopped
 
-    # RESOURCE LIMITS 
-    # Prevents the container from consuming all system memory
     deploy:
       resources:
         limits:
@@ -39,7 +27,6 @@ services:
         reservations:
           memory: 256M
 
-    #  HEALTHCHECK 
     healthcheck:
       test: ["CMD", "python", "-c",
              "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
@@ -47,7 +34,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
-
   #  FUTURE SERVICES (commented out — ready to enable) 
 
   # prometheus:
